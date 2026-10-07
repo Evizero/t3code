@@ -242,6 +242,15 @@ import {
   TerminalWriteInput,
 } from "./terminal.ts";
 import {
+  DictationError,
+  DictationFeedInput,
+  DictationModelInput,
+  DictationSessionInput,
+  DictationStartInput,
+  DictationStatus,
+  DictationTranscript,
+} from "./dictation.ts";
+import {
   DiscoveredLocalServerList,
   ConfiguredLocalServerUrls,
   PreviewCloseInput,
@@ -429,6 +438,15 @@ export const WS_METHODS = {
   terminalClear: "terminal.clear",
   terminalRestart: "terminal.restart",
   terminalClose: "terminal.close",
+
+  // Dictation methods
+  dictationSubscribeStatus: "dictation.subscribeStatus",
+  dictationInstallModel: "dictation.installModel",
+  dictationRemoveModel: "dictation.removeModel",
+  dictationStart: "dictation.start",
+  dictationFeed: "dictation.feed",
+  dictationFinish: "dictation.finish",
+  dictationCancel: "dictation.cancel",
 
   // Preview methods
   previewOpen: "preview.open",
@@ -1425,6 +1443,50 @@ const WsTerminalCloseRpc = Rpc.make(WS_METHODS.terminalClose, {
   error: Schema.Union([TerminalError, EnvironmentAuthorizationError]),
 });
 
+const WsDictationSubscribeStatusRpc = Rpc.make(WS_METHODS.dictationSubscribeStatus, {
+  payload: Schema.Struct({}),
+  success: DictationStatus,
+  error: EnvironmentAuthorizationError,
+  stream: true,
+});
+
+/**
+ * Starts or continues a model's download in the background; progress arrives on the status
+ * stream.
+ */
+const WsDictationInstallModelRpc = Rpc.make(WS_METHODS.dictationInstallModel, {
+  payload: DictationModelInput,
+  error: Schema.Union([DictationError, EnvironmentAuthorizationError]),
+});
+
+/** Also cancels the model's download in progress and ends a session using it. */
+const WsDictationRemoveModelRpc = Rpc.make(WS_METHODS.dictationRemoveModel, {
+  payload: DictationModelInput,
+  error: Schema.Union([DictationError, EnvironmentAuthorizationError]),
+});
+
+const WsDictationStartRpc = Rpc.make(WS_METHODS.dictationStart, {
+  payload: DictationStartInput,
+  error: Schema.Union([DictationError, EnvironmentAuthorizationError]),
+});
+
+const WsDictationFeedRpc = Rpc.make(WS_METHODS.dictationFeed, {
+  payload: DictationFeedInput,
+  success: DictationTranscript,
+  error: Schema.Union([DictationError, EnvironmentAuthorizationError]),
+});
+
+const WsDictationFinishRpc = Rpc.make(WS_METHODS.dictationFinish, {
+  payload: DictationSessionInput,
+  success: DictationTranscript,
+  error: Schema.Union([DictationError, EnvironmentAuthorizationError]),
+});
+
+const WsDictationCancelRpc = Rpc.make(WS_METHODS.dictationCancel, {
+  payload: DictationSessionInput,
+  error: EnvironmentAuthorizationError,
+});
+
 const WsPreviewOpenRpc = Rpc.make(WS_METHODS.previewOpen, {
   payload: PreviewOpenInput,
   success: PreviewSessionSnapshot,
@@ -1926,6 +1988,13 @@ export const WsRpcGroup = RpcGroup.make(
   WsTerminalCloseRpc,
   WsSubscribeTerminalEventsRpc,
   WsSubscribeTerminalMetadataRpc,
+  WsDictationSubscribeStatusRpc,
+  WsDictationInstallModelRpc,
+  WsDictationRemoveModelRpc,
+  WsDictationStartRpc,
+  WsDictationFeedRpc,
+  WsDictationFinishRpc,
+  WsDictationCancelRpc,
   WsPreviewOpenRpc,
   WsPreviewNavigateRpc,
   WsPreviewResizeRpc,

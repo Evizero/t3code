@@ -167,6 +167,29 @@ awake; it can sleep normally once recording stops.
 Transcription runs on your device. T3 Code deletes the temporary audio after
 transcription or cancellation; only the message text is sent when you submit.
 
+## Dictation on web and desktop
+
+Turn on **Settings → General → Dictation → Local dictation**, then download a speech
+model from the list there. Models come from Hugging Face and run on your machine: the
+recommended ones cover English and most European languages, and **All** lists the rest.
+A download keeps going when you leave Settings, and continues where it stopped if T3 Code
+closes.
+
+Click the microphone next to the attach button, or press `ctrl+alt+z` in any text box,
+including the answer to a question from the agent. Your words appear in grey at the
+cursor. Press Enter, the shortcut, or the stop button to insert them there, or Escape to
+discard them. Clicking send while you talk finishes the dictation and sends it with your
+message. You can move around the app while you talk: a small pill holds your words
+until you return to the text box, or insert them from the pill into wherever you are.
+Change the shortcut in **Settings → Keybindings**.
+
+Models marked **Live** show your words as you speak. Others, or any model with
+**Live preview** off, transcribe the recording when you stop.
+
+Dictation only uses T3 Code running on the machine you're at, the desktop app or a server
+opened on localhost, so your voice never leaves it. It isn't available when you reach a
+server over the network or use the hosted app.
+
 ## Queued messages
 
 On web and desktop, the composer shows **Interrupt** while the agent is working and the draft is

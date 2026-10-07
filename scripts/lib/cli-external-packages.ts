@@ -35,6 +35,11 @@ export const CLI_RUNTIME_EXTERNAL_PREFIXES = [
   "@yuuang/",
   "@ff-labs/",
   "@napi-rs/keyring",
+  // Dictation: a koffi FFI binding that dlopens the platform's transcribe.cpp build.
+  "transcribe-cpp",
+  "@transcribe-cpp/",
+  "koffi",
+  "@koromix/",
   "@clerk/electron-passkeys",
   "node-gyp-build",
   "node-addon-api",

@@ -175,6 +175,7 @@ import * as ServerLifecycleEvents from "./serverLifecycleEvents.ts";
 import * as ServerRuntimeStartup from "./serverRuntimeStartup.ts";
 import * as ServerSettings from "./serverSettings.ts";
 import * as TerminalManager from "./terminal/Manager.ts";
+import * as Dictation from "./dictation/Dictation.ts";
 import { withTerminalOutputWindow } from "./terminal/OutputProtocol.ts";
 import * as PreviewAutomationBroker from "./mcp/PreviewAutomationBroker.ts";
 import * as ServerBrowser from "./preview/ServerBrowser.ts";
@@ -1268,6 +1269,7 @@ const layerWsRpc = (
       const vcsStatusBroadcaster = yield* VcsStatusBroadcaster.VcsStatusBroadcaster;
       const terminalManager = yield* TerminalManager.TerminalManager;
       const previewManager = yield* PreviewManager.PreviewManager;
+      const dictation = yield* Dictation.Dictation;
       const portDiscovery = yield* PortScanner.PortDiscovery;
       const providerRegistry = yield* ProviderRegistry.ProviderRegistry;
       const modelManifest = yield* ModelManifest.ModelManifest;
@@ -2892,6 +2894,13 @@ const layerWsRpc = (
         [WS_METHODS.subscribePreviewEvents]: (_input) => previewManager.events,
         [WS_METHODS.deviceConfigure]: (input) => deviceService.configure(input),
         [WS_METHODS.deviceTestHost]: (input) => deviceService.testHost(input),
+        [WS_METHODS.dictationSubscribeStatus]: (_input) => dictation.status,
+        [WS_METHODS.dictationInstallModel]: (input) => dictation.installModel(input.modelId),
+        [WS_METHODS.dictationRemoveModel]: (input) => dictation.removeModel(input.modelId),
+        [WS_METHODS.dictationStart]: (input) => dictation.start(input),
+        [WS_METHODS.dictationFeed]: (input) => dictation.feed(input),
+        [WS_METHODS.dictationFinish]: (input) => dictation.finish(input.sessionId),
+        [WS_METHODS.dictationCancel]: (input) => dictation.cancel(input.sessionId),
         [WS_METHODS.deviceList]: (input) =>
           input.inspectOnly && !input.updateTool
             ? deviceService.inspect

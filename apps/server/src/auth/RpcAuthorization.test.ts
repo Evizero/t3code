@@ -185,6 +185,22 @@ describe("RPC authorization scopes", () => {
     }
   });
 
+  it("lets readers see dictation status, but only operators record or change models", () => {
+    expect(requiredScopeForRpcMethod(WS_METHODS.dictationSubscribeStatus)).toBe(
+      AuthOrchestrationReadScope,
+    );
+    for (const method of [
+      WS_METHODS.dictationInstallModel,
+      WS_METHODS.dictationRemoveModel,
+      WS_METHODS.dictationStart,
+      WS_METHODS.dictationFeed,
+      WS_METHODS.dictationFinish,
+      WS_METHODS.dictationCancel,
+    ]) {
+      expect(requiredScopeForRpcMethod(method)).toBe(AuthOrchestrationOperateScope);
+    }
+  });
+
   it("rejects unknown RPC method names", () => {
     for (const method of ["server.notRegistered", "toString", "constructor"]) {
       expect(() => requiredScopeForRpcMethod(method)).toThrow(

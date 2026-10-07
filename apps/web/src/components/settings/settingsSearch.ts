@@ -517,6 +517,14 @@ export const SETTINGS_SEARCH_ITEMS = [
     searchTerms: ["telemetry analytics usage data tracking legal opt out"],
   },
   {
+    id: "dictation",
+    title: "Dictation",
+    to: "/settings/general",
+    searchTerms: [
+      "local dictation voice speech microphone transcribe transcription model download language live preview parakeet whisper",
+    ],
+  },
+  {
     id: "diagnostics",
     title: "Diagnostics",
     to: "/settings/general",

@@ -168,6 +168,7 @@ import {
   useSettingsSearchTargetId,
 } from "./settingsLayout";
 import { searchableSetting } from "./settingsSearch";
+import { DictationSettings } from "./DictationSettings";
 import { ProjectFavicon } from "../ProjectFavicon";
 import { PanelAnimationsPreview } from "./PanelAnimationsPreview";
 
@@ -3338,6 +3339,8 @@ export function GeneralSettingsPanel() {
           }
         />
       </SettingsSection>
+
+      <DictationSettings />
 
       <SettingsSection id="about" title="About">
         {isElectron || HOSTED_APP_CHANNEL ? (

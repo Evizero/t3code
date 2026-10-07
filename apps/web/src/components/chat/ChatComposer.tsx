@@ -4,6 +4,8 @@ import { isLocalEnvironmentDisabled } from "../../localEnvironment";
 import { usePrimaryEnvironmentId } from "../../state/environments";
 import { useRightPanelStore } from "~/rightPanelStore";
 import { AttachmentFilePreview } from "../files/AttachmentFilePreview";
+import { ComposerDictationControl } from "./ComposerDictationControl";
+import { useDictationStore } from "../dictation/dictationStore";
 import { Dialog, DialogPopup, DialogTitle } from "../ui/dialog";
 import { filterComposerPullRequestMatches } from "@t3tools/shared/composerPullRequestMatches";
 import { importPastedComposerText, readPastedComposerContext } from "../composerInlineTokenPaste";
@@ -2523,6 +2525,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
   // ------------------------------------------------------------------
   // Derived: composer send state
   // ------------------------------------------------------------------
+  const dictating = useDictationStore((state) => state.inComposer);
   const composerSendState = useMemo(
     () =>
       deriveComposerSendState({
@@ -2848,6 +2851,13 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
     (!isComposerCollapsedMobile && showPlanFollowUpPrompt && activeProposedPlan !== null);
   const showCollapsedMobilePromptRow =
     isComposerCollapsedMobile && !isComposerApprovalState && pendingUserInputs.length === 0;
+  // Dictated text goes in at the cursor, which these states do not accept; a question takes it
+  // as a typed answer.
+  const showComposerDictation =
+    !isComposerApprovalState &&
+    !projectSelectionRequired &&
+    (pendingUserInputs.length === 0 ||
+      activePendingProgress?.activeQuestion?.allowCustomAnswer !== false);
   const showComposerAttachAction =
     fileStagingLimit !== null &&
     (!activePendingProgress ||
@@ -7532,6 +7542,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                   }
                   className="flex shrink-0 flex-nowrap items-center justify-end gap-2"
                 >
+                  {showComposerDictation ? (
+                    <ComposerDictationControl keybindings={keybindings} />
+                  ) : null}
                   {showComposerAttachAction ? (
                     <>
                       <input
@@ -7605,7 +7618,8 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                       projectSelectionRequired
                     }
                     isPreparingWorktree={isPreparingWorktree}
-                    hasSendableContent={composerSendState.hasSendableContent}
+                    // Dictation's words count: sending stops it and sends them.
+                    hasSendableContent={composerSendState.hasSendableContent || dictating}
                     canResume={showResumeAction}
                     preserveComposerFocusOnPointerDown={isMobileViewport || isComposerResting}
                     isEditingQueuedMessage={isEditingQueuedMessage}

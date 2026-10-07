@@ -118,6 +118,29 @@ describe("command permissions", () => {
         }),
       ),
   );
+  it.effect(
+    "offers and runs dictation's downloads and recording only with operate permission",
+    () =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const registry = yield* setup;
+          registry.set(sessions(env), AsyncResult.success(grant(true)));
+          registry.set(sessions(other), AsyncResult.success(grant(false)));
+          for (const tag of [
+            WS_METHODS.dictationInstallModel,
+            WS_METHODS.dictationRemoveModel,
+            WS_METHODS.dictationStart,
+          ]) {
+            const dictation = createCommandPermissions(runtime, tag);
+            expect(registry.get(dictation.permissionAtom(env))).toBe(true);
+            yield* dictation.authorize(registry, env);
+            expect(registry.get(dictation.permissionAtom(other))).toBe(false);
+            const denied = yield* dictation.authorize(registry, other).pipe(Effect.flip);
+            expect(denied._tag).toBe("EnvironmentAuthorizationError");
+          }
+        }),
+      ),
+  );
   it("rechecks permission after waiting in a serial command lane", async () => {
     const registry = AtomRegistry.make();
     const unmount = registry.mount(sessions(env));
